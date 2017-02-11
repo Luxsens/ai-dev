@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 var defaultMsg = {
   text: "test",
