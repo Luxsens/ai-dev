@@ -41,9 +41,9 @@ function showButtons() {
   } else if(collection == "") { state = brand; 
   } else if(colour == "") { state = collection;
   } else {state = colour}
-  logger("state", typeof state)
+  logger("state", state)
 
-  var buttons = menuData[state]
+  var buttons = menuData[category]
   
 
 
