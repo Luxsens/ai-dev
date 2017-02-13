@@ -64,7 +64,7 @@ var menuData = {
     "Town",
     "Traveller",
     "Weekender",
-    "Work",
+    "Work"
   ],
 
   celinecollect: [
