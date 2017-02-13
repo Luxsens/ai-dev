@@ -27,7 +27,7 @@ function showButtons() {
   // var brand = "";
   // var collection = "";
   // var colour = "";
-  var state;
+  //var state;
 
   var category = findGetParameter("category"); logger("found category", category)
   var style = findGetParameter("style"); logger("found style", style)
@@ -35,15 +35,15 @@ function showButtons() {
   var collection = findGetParameter("collection"); logger("found collection", collection)
   var colour = findGetParameter("colour"); logger("found colour", colour)
 
-  if (style == "") {
-    state = category;
-  } else if(brand == "") { state = style;
-  } else if(collection == "") { state = brand; 
-  } else if(colour == "") { state = collection;
-  } else {state = colour}
-  logger("state", state)
+  if (style == "") {var buttons = menuData[category];
+  } else if(brand == "") {var buttons = menuData[style];
+  } else if(collection == "") {var buttons = menuData[brand];
+  } else if(colour == "") {var buttons = menuData[collection];
+  } else {var buttons = menuData[colour];}
 
-  var buttons = menuData[state]
+  //logger("state", typeof state)
+
+  //var buttons = menuData[state]
   
 
 

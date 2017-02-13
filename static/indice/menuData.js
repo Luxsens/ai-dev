@@ -3,7 +3,7 @@ var menuData = {
   categories: [
     "Bag",
     "Watch", 
-    "Others"
+    //"Others"
   ],
 
   bstyle: [
