@@ -27,7 +27,7 @@ function showButtons() {
   // var brand = "";
   // var collection = "";
   // var colour = "";
-  var state = "";
+  var state;
 
   var category = findGetParameter("category"); logger("found category", category)
   var style = findGetParameter("style"); logger("found style", style)
@@ -43,7 +43,7 @@ function showButtons() {
   } else {state = colour}
   logger("state", state)
 
-  var buttons = menuData[category]
+  var buttons = menuData[state]
   
 
 
