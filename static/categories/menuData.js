@@ -167,7 +167,7 @@ var menuData = {
     "Luminor",
     "Mare nostrum",
     "Marina militare"
-  ];
+  ],
 
   pradacollect: [
     "Bibliothegue",
@@ -193,7 +193,7 @@ var menuData = {
     "Migauss",
     "Oyster perpetual",
     "others"
-  ];
+  ],
 
   Color: [
     "Red",
