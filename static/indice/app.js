@@ -22,18 +22,36 @@ function introAnim() {
 
 function showButtons() {
 
-  var category = findGetParameter("category")
-  logger("found category", category)
-  var buttons = menuData[category]
+  // var category = "categories";
+  // var style = "";
+  // var brand = "";
+  // var collection = "";
+  // var colour = "";
+  var state = "";
 
+  var category = findGetParameter("category"); logger("found category", category)
+  var style = findGetParameter("style"); logger("found style", style)
+  var brand = findGetParameter("brand"); logger("found brand", brand)
+  var collection = findGetParameter("collection"); logger("found collection", collection)
+  var colour = findGetParameter("colour"); logger("found colour", colour)
 
+  if (style == "") {
+    state = category;
+  } else if(brand == "") { state = style;
+  } else if(collection == "") { state = brand; 
+  } else if(colour == "") { state = collection;
+  } else {state = colour}
+  
+  var buttons = menuData[state]
+
+  //person = lists of JSON files
   buttons.map(function(person) {
     logger("button", person)
     var html = "<li class='button-big'>" + person + "</li>";
     var elem = $(html).appendTo('ul')
 
     elem.tap( function(evt) {
-      clickButton(evt, person, category)
+      clickButton(evt, person, state)
     })
   })
 }
@@ -51,10 +69,10 @@ function setup() {
   showButtons()
 }
 
-function clickButton(evt, person, category) {
+function clickButton(evt, person, state) {
   // var target = evt.target
   // target.classList.add('active');
-  // var text = "category " + category + " person " + person
+  var text = "state " + state + " select " + person
   // logger("tapped", text)
 
   // var msg = {

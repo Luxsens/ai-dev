@@ -202,24 +202,6 @@ var menuData = {
     "Blue"
   ],
 
-
-  music: [
-    "JAX JONES",
-    "ZARA LARSSON",
-    "SEAN PAUL",
-    "DAFT PUNK",
-    "MACHINE GUN KELLY",
-    "SAGE THE GEMINI",
-    "BRUNO MARS",
-    "JOHN LEGEND",
-    "DRAKE",
-    "MARK MORRISON",
-    "TINIE TEMPAH",
-    "ARIANA GRANDE",
-    "JUSTIN TIMBERLAKE",
-    "JUSTIN BIEBER",
-    "KENT JONES"
-  ],
   movies: [
     "Arnold Schwarzenegger",
     "Danny DeVito"
