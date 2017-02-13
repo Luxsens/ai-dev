@@ -140,7 +140,7 @@ var menuData = {
     "Jige",
     "Jypsiere",
     "others"
-  ];
+  ],
 
   louiscollect: [
     "alma",
