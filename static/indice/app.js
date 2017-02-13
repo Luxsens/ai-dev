@@ -43,6 +43,8 @@ function showButtons() {
   } else {state = colour}
   
   var buttons = menuData[state]
+  logger("state", state)
+
 
   //person = lists of JSON files
   buttons.map(function(person) {
