@@ -73,7 +73,7 @@ function clickButton(evt, person, state) {
   // var target = evt.target
   // target.classList.add('active');
   var text = "state " + state + " select " + person
-  // logger("tapped", text)
+  logger("tapped", text)
 
   // var msg = {
   //   text: text
