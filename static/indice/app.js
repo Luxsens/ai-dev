@@ -41,9 +41,10 @@ function showButtons() {
   } else if(collection == "") { state = brand; 
   } else if(colour == "") { state = collection;
   } else {state = colour}
+  logger("state", state)
   
   var buttons = menuData[state]
-  logger("state", state)
+  
 
 
   //person = lists of JSON files
