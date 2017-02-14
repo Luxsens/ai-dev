@@ -195,7 +195,7 @@ var menuData = {
     "others"
   ],
 
-  Color: [
+  colour: [
     "Red",
     "Green",
     "Yellow",

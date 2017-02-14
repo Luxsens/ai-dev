@@ -22,28 +22,48 @@ function introAnim() {
 
 function showButtons() {
 
-  // var category = "categories";
-  // var style = "";
   // var brand = "";
   // var collection = "";
   // var colour = "";
   //var state;
 
   var category = findGetParameter("category"); logger("found category", category)
-  // var style = findGetParameter("style"); logger("found style", style)
-  // var brand = findGetParameter("brand"); logger("found brand", brand)
-  // var collection = findGetParameter("collection"); logger("found collection", collection)
-  // var colour = findGetParameter("colour"); logger("found colour", colour)
+  var styles = findGetParameter("styles");if(styles.length === undefined) {styles = "none"}logger("found style", styles)
+  var brand = findGetParameter("brand");if(brand.length === undefined) {brand = "none"}logger("found brand", brand)
+  var collection = findGetParameter("collection");if(collection.length === undefined) {collection = "none"}logger("found collection", collection)
+  var col = findGetParameter("colour");if(col.length === undefined) {col = "none"} logger("found colour", col)
+  var endf = findGetParameter("endflag");if(endf.length === undefined) {endf = "false"}logger("found endflag", endf)
 
-  // if (style == "") {var buttons = menuData[category];
-  // } else if(brand == "") {var buttons = menuData[style];
-  // } else if(collection == "") {var buttons = menuData[brand];
-  // } else if(colour == "") {var buttons = menuData[collection];
-  // } else {var buttons = menuData[colour];}
 
-  //logger("state", typeof state)
 
-  var buttons = menuData[category]
+  //navigating URL
+  var state;
+  //if all end then go to the page
+  if(endf == "go") {
+    state == "end";
+
+    if(findGetParameter("bagbrand").length !== undefined) {
+    var bag = findGetParameter("bagbrand"); 
+    location.replace("http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/" + bag);
+    } else if(findGetParameter("watchbrand").length !== undefined) {
+    var watch = findGetParameter("watchbrand"); 
+    location.replace("http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/" + watch);
+    } 
+
+  //http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/balenciaga
+
+  // else sort by navigation
+  } else if(styles === "none") {state = category
+  } else if(brand === "none") {state = styles
+  } else if(collection === "none") {state = brand
+  } else if(col === "none") {state = collection
+  } else if(col !== "none") {state = col
+  } 
+
+  logger("type of state", typeof state)
+  logger("value", state)
+
+  var buttons = menuData[state]
   
 
 
@@ -54,7 +74,7 @@ function showButtons() {
     var elem = $(html).appendTo('ul')
 
     elem.tap( function(evt) {
-      clickButton(evt, person, category)
+      clickButton(evt, person, state)
     })
   })
 }
@@ -72,11 +92,53 @@ function setup() {
   showButtons()
 }
 
-function clickButton(evt, person, category) {
+function clickButton(evt, person, state) {
   // var target = evt.target
   // target.classList.add('active');
-  var text = "state " + category + " select " + person
+  //var params = params.concat(person + "&");
+  //logger("throw param", params)
+  var text = "state " + state + " select " + person
+  var now = location.href;
+
   logger("tapped", text)
+
+  //navigation step using if condition
+  
+  //Categories
+  if(findGetParameter("category") == "categories" && person === "Bag") {
+    location.assign(now.concat("&styles=bstyle"))
+  } else if(findGetParameter("category") == "categories" && person === "Watch") {
+    location.assign(now.concat("&styles=wstyle&brand=wbrand"))
+  }
+
+  //style --> bag style --> go to bag brand
+  if(findGetParameter("styles") == "bstyle") {
+    location.assign(now.concat("&bagstyles=" + decodeURIComponent(person)) +"&brand=bbrand")
+  }
+
+
+  //brand --> bag --> go to collection
+  if(findGetParameter("brand") == "bbrand" && person == "Balenciaga") {
+    location.assign(now.concat("&bagbrand=" + decodeURIComponent(person)) +"&collection=balenciagacollect")
+  } else if(findGetParameter("brand") == "bbrand") {
+    location.assign(now.concat("&bagbrand=" + decodeURIComponent(person)) +"&collection=others" +"&colour=colour")
+  } 
+
+  //brand --> watch --> go to collection
+  if(findGetParameter("brand") == "wbrand" && person === "Rolex") {
+    location.assign(now.concat("&watchbrand=" + decodeURIComponent(person)) +"&collection=rolexcollect")
+  } else if(findGetParameter("brand") == "wbrand") {
+    location.assign(now.concat("&watchbrand=" + decodeURIComponent(person)) +"&collection=others"+"&colour=others"+"&pickcolour=none"+"&endflag=go")
+  } 
+
+  //bag collection -- > attribute
+  if(findGetParameter("collection").length != undefined && findGetParameter("brand") === "bbrand") {
+    location.assign(now.concat("&colour=colour" + "&pickcolour=" + person + "&endflag=go"))
+  } 
+  
+  
+
+    
 
   // var msg = {
   //   text: text

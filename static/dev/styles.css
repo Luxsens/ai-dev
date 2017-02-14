@@ -7,6 +7,10 @@ body {
   /*border: 1px solid red;*/
 }
 
+.simtext {
+  text-align: center
+}
+
 ul {
   list-style-type: none;
   indent: 0;
