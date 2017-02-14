@@ -50,8 +50,11 @@ function showButtons() {
     location.replace("http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/" + watch);
     } 
 
-  //http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/balenciaga
-
+    var html = "<div class='prompt'>" + "<img src='../images/layout/loading.gif'>" + "</img>" + "</div>";
+    var elem = $(html).appendTo('ul')
+    // 
+    
+          
   // else sort by navigation
   } else if(styles === "none") {state = category
   } else if(brand === "none") {state = styles
