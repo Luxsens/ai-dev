@@ -42,6 +42,10 @@ function showButtons() {
   if(endf == "go") {
     state == "end";
 
+    // loading gif
+    var html = "<div class='prompt'>" + "<img src='../images/layout/loading.gif'>" + "</img>" + "</div>";
+    var elem = $(html).appendTo('ul')
+
     if(findGetParameter("bagbrand").length !== undefined) {
     var bag = findGetParameter("bagbrand"); 
     location.replace("http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/" + bag);
@@ -50,9 +54,8 @@ function showButtons() {
     location.replace("http://www.luxsens.com/m/index.php/view/product/list.html/+attr//+category/45/+searching/" + watch);
     } 
 
-    var html = "<div class='prompt'>" + "<img src='../images/layout/loading.gif'>" + "</img>" + "</div>";
-    var elem = $(html).appendTo('ul')
-    // 
+    
+    
     
           
   // else sort by navigation
