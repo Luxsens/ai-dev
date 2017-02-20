@@ -61,20 +61,24 @@ function queryCollectionID(_brandName){//input string
   return arr; 
 }
 
-function querystylesID(lang){//input string
-  var arr = [];//get only brand 'name'
-  for(var i=0; i<stylesid.length;i++){//got collectionid from menuData.js
-    if(lang == "ENG"){
-        arr[i] = stylesid[i][2];
-    } else if(lang == "CHN") {
-        arr[i] = stylesid[i][3];
-    }
-  }  
+function queryStylesID(lang){//input string
+    var arr = []; 
+    $.getJSON("JSON/styles.json", function(json) {
+
+      
+        for(var i=1; i<json.length-1;i++){
+          if(lang == "ENG"){
+            arr[i-1] = json[i][2];
+          } else if(lang == "CHN") {
+            arr[i-1] = json[i][3];
+          }
+        }  
+    })    
   return arr; 
 }
 
 function queryMenuDataID(menu,lang){//input string
-  var arr = [];//get only brand 'name'
+  var arr = [];
   if(lang == "ENG") {
     for(var i=0; i<menuData[menu].length;i++){//got collectionid from menuData.js
       arr[i] = menuData[menu][i][0];
