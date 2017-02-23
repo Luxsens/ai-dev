@@ -1,9 +1,6 @@
 <html lang="en">
 
   <head>
-
-    <link rel="stylesheet" href="https://luxsens.github.io/ai-dev/static/dev/styles.css" />
-    <link rel="stylesheet" href="https://luxsens.github.io/ai-dev/static/shared/shared-styles.css" />
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link rel="apple-touch-icon" href="/open/images/icons/logo.png" />
@@ -11,34 +8,57 @@
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width" />
   </head>
 
-  <body>
-      <div class="header">
-        <div class="page_title" id="prompt"></div>
+ <header>
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="stylesheets/shared-styles.css"/>
+    <link rel="stylesheet" href="stylesheets/body.css"/>
+    <link rel="stylesheet" href="stylesheets/f7.css"/>
+    <link rel="stylesheet" href="stylesheets/luxsens.css"/>
+    <script src="lib/papaparse.js"></script>
+    <script src="lib/zepto-custom.min.js"></script>
+    <script src="lib/jweixin.js"></script>
+ </header> 
+
+ <body>
+ 
+<!-- <div class="skip-button"></div> -->
+
+<div class="popup smart-select-popup smart-select-popup-radio-1487670666357 remove-on-close modal-in brand brand72" style="display: block;">
+
+<div class="simtext"> ver.. 2017/02/22 </div>
+
+
+  <div class="view navbar-fixed" data-page="smart-select-radio-1487670666357">
+    <div class="pages">  
+    <div data-page="smart-select-radio-1487670666357" data-select-name="" class="page smart-select-page  ">
+
+  <!-- SEARCH BAR  -->  
+  <!-- <form class="searchbar searchbar-init" data-search-list=".smart-select-list-1487670666357" data-search-in=".item-title">
+    <div class="searchbar-input"> 
+      <input type="search" placeholder="Search">
+        <a href="#" class="searchbar-clear"></a></div>
+          <a href="#" class="searchbar-cancel">Cancel</a>
+  </form> -->
+
+    <!-- <div class="page-content">    -->   
+      <div id = "sweetblock" class="list-block smart-select-list-1487670666357 ">        
+        <ul>
+        
+        <!-- javascript append here -->
+
+        </ul>
       </div>
-
-
-    <div class="simtext"> -- ver 2017/02/16 -- </div>
-
-    <div class='menu'>
-
-      <ul id='items'>
-      </ul>
-
     </div>
+  </div>
+  </div>
+  </div>
 
+</body>
 
-  </body>
-
-  <script src="javascript/papaparse.js"></script>
-  <script src="javascript/test.js"></script>
-  
-  <script src="menuData.js"></script> <!-- First priority -->
-
-
-  <script src="helper.js"></script>
-  <script src="../shared/zepto-custom.min.js"></script>
-  
-  <script src="app.js"></script>
-  <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<footer>
+  <script src="app/menuData.js"></script> <!-- First priority -->
+  <script src="app/helper.js"></script>
+  <script src="app/app.js"></script>
+</footer>
 
 </html>
