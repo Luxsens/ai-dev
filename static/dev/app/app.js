@@ -2,7 +2,7 @@
  
 function setup() {
   logger("setting up","Page");
-  showButtons();
+  showButtons(); 
 }
 
 $(window).on("load",function(event) {
@@ -81,10 +81,11 @@ function stateMenuHandle(_state){
 
   var _case = 666;
   var UI; 
-
     //becareful of load order, because of different source location
     if(onStep =="end"){
           _case = 4
+      } else if( onStep =="brand" && stepValue == "abrand") { //?lang=ENG&category=categories&style=wstyle&styleID=&brand=abrand
+          _case = 5
       } else if( onStep =="attr") {
           _case = 3
       } else if( onStep =="collection") {
@@ -97,6 +98,11 @@ function stateMenuHandle(_state){
 
   switch(_case){
     case 4: // wait for redirect, do nothing
+
+    case 5://show all possible brand/ will use another logic
+      //special case : //category=categories&style=all&styleID=&brand=abrand
+      UI = queryAllBrand();
+      break;
       
     case 3://show colour
       //Note:case sensitive. in database first letter is capitalize ex. "Backpack"
@@ -127,7 +133,6 @@ function stateMenuHandle(_state){
         alert("Error#666: can't handle!! selection, please start over")
       break;   
   }
-
    //may omit depends on UI
    var UI = prep(UI);
   
@@ -138,18 +143,19 @@ function stateMenuHandle(_state){
         var html = "<li class='item-divider'>" + choice + "</li>";
         var elem = $(html).appendTo('ul')
       } else {
-      var html = 
-      "<li><label class='label-radio item-content'>" +
-          "<div class='item-inner'>" +
-            "<div class='item-title'>" + choice +  "</div>" +
-          "</div>" +
-          "</label>" +
-      "</li>"
+        var html = 
+        "<li><label class='label-radio item-content'>" +
+            "<div class='item-inner'>" +
+              "<div class='item-title'>" + choice +  "</div>" +
+            "</div>" +
+            "</label>" +
+        "</li>"
       var elem = $(html).appendTo('ul')
       }
-
+    //##################### UI building end here ######################
+      
       //add tap properties
-      elem.tap( function(evt) {
+      $(elem).on("tap",function(evt){  
         clickButton(evt, choice, _state)
       })//end elem
     })//end buttons
@@ -160,27 +166,34 @@ function stateMenuHandle(_state){
 function showButtons() {
 
   var _state = getState();
+  var onStep = _state["onStep"];
   var collectionID = _state["collectionID"];
   var pickattr = _state["pickattr"];
   var brandID = _state["brandID"];
   var styleID = _state["styleID"];
-  var lang = _state["lang"]
+  var lang = _state["lang"];
 
-  if(_state["onStep"] == "end")
-  {
-      insertLoadingGif('ul','images/loading.gif');
-      goSearchLuxsens(lang,collectionID,styleID,brandID,pickattr);
-
-  } 
+  var link="#";
 
   if(_state["onStep"] == "style"||_state["onStep"] == "brand" 
     || _state["onStep"] == "collection" || _state["onStep"] == "attr") {
+    //Add skip button
     
-    toggleSkip(["onStep"],lang);
-    
-  } 
+    insertSkipButton("#sweetbox");//<!-- <div class="skip-button"></div> -->
+    var link = skipThrow(onStep,lang);
+    $(".skip-button").on("tap",function(evt){
+        location.assign(link);
+    })
+      
+  }//end if
 
-  stateMenuHandle(_state);
+  if(onStep !== "end"){ 
+      stateMenuHandle(_state);
+    } else {
+      insertLoadingGif('#shownitem','images/loading.gif');
+      goSearchLuxsens(lang,collectionID,styleID,brandID,pickattr);
+    }  
+  
 }//end show button  
 
 
@@ -203,8 +216,51 @@ function clickButton(evt, choice, _state) {
   //##################################
   //navigation step using if condition  
   //##################################
+  //
+  //###############
+  //all brand process
+  //###############
   
+  //category=categories&style=all&styleID=&brand=abrand
+  if(stepValue === "abrand") {
+    var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
+    sessionStorage.setItem("pickbrand",choice);// remember pick brand
+    //if it has a collection go to collection 
 
+    if(hasCollection2(choice)) {
+      location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1])) 
+    } else { //if it does not have collection
+      if(stepValue == "bbrand"){//bags --> go pick colour
+        sessionStorage.setItem("pickcollection","other");
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=colour")) 
+      } else if(stepValue == "wbrand") {//watch --> go to luxsens
+        //sessionStorage.clear();
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
+      }
+    }
+  }
+
+  //###############
+  //regular process
+  //###############
+  //
+  //// 3) #Hermes/gucci/etc.. now on bag brand brand = bbrand if any of the bag has collection go to that collection 
+  // --> set collection=*respective collection --> go to xxx)
+  // if(onStep === "brand" && stepValue == "abrand") {
+  //   //if it has a collection go to collection 
+  //   //if(hasCollection2(sessionStorage.pickstyle,choice)) {
+  //   //   location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1])) 
+  //   // } else { //if it does not have collection
+  //   //   if(stepValue == "bbrand"){//bags --> go pick colour
+  //   //     sessionStorage.setItem("pickcollection","other");
+  //   //     location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=colour")) 
+  //   //   } else if(stepValue == "wbrand") {//watch --> go to luxsens
+  //   //     //sessionStorage.clear();
+  //   //     location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
+  //   //   }
+  //   // }
+  // }
+  ///
   // 5) #red/blue/green now on attribute if it is bag collection send bag attribute and endflag
   // --> set attr=colour and get pickcolour=*respective colour then end flag=end
   // go to luxsens page
@@ -232,6 +288,8 @@ function clickButton(evt, choice, _state) {
     var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
     sessionStorage.setItem("pickbrand",choice);// remember pick brand
     //if it has a collection go to collection 
+
+    //regular case
     if(hasCollection(sessionStorage.pickstyle,choice)) {
       location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1])) 
     } else { //if it does not have collection
@@ -262,7 +320,6 @@ function clickButton(evt, choice, _state) {
     sessionStorage.setItem("pickstyle","wrist watches"); 
     location.assign(now.concat("&style=wstyle&styleID=1568&brand=wbrand"))
   }
-
 }
 
 //#############################################################################
@@ -288,83 +345,43 @@ function goSearchLuxsens(lang,_collectionid,_stylesid,_brandid,_pickattr){
       )
   }  
 }
-function insertLoadingGif(append,path){
+
+function insertLoadingGif(id,path){
   var html = "<div class='prompt'>" + "<img src='" + path +"''>" + "</img>" + "</div>";
-  var elem = $(html).appendTo(append);
+  $(html).appendTo(id);
 }
 
-function toggleSkip(onStep,lang){
-  var elm = $('<div class="skip-button">SKIP</div>').prependTo('body');
-  if(lang == "ENG"){
-  var link="http://www.luxsens.com";
-      if(onStep = "style"){link = "http://www.luxsens.com/m/index.php/view/product/list.html/+category/72"}
-       else if(onStep = "brand" && findGetParameter("brand") == "bbrand"){ 
-          var id = findGetParameter("styleID");   
-          link = "http://www.luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+id
-       } //show all bags
-       else if(onStep = "brand" && findGetParameter("brand") == "wbrand"){
-          var id = findGetParameter("styleID");   
-          link = "http://www.luxsens.com/m/index.php/view/product/list.html/+category/73"
-          //http://www.luxsens.com/m/index.php/view/product/list.html/+category/73
-       } //show all bags with respective style
-       else if(onStep = "collection" && findGetParameter("brand") == "bbrand"){
-          var s_id = findGetParameter("styleID");  
-          var b_id = findGetParameter("brandID");  
-          link = "http://www.luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+ s_id + "/item_brand/" + b_id
-       }
-       else if(onStep = "collection" && findGetParameter("brand") == "wbrand"){ 
-          var b_id = findGetParameter("brandID");  
-          link = "http://www.luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+ s_id + "/item_brand/" + b_id
-       
-       }
-       else if(onStep = "attr" ){
-          var s_id = findGetParameter("styleID");  
-          var b_id = findGetParameter("brandID");
-          var c_id = findGetParameter("collectionID");  
-          link = "http://www.luxsens.com/m/index.php/view/product/list.html/+attr/item_collection/"+c_id+"/item_style/"+s_id+"/item_brand/"+b_id+"/+category/45"
-       }  
-      //show all brand
-        $(".skip-button").on("tap",function(){
-          $(".skip-button").off("tap");
-          $("li").remove();
-          insertLoadingGif('ul','images/loading.gif');
-          location.replace(link);
-        })
-  }
-  if(lang == "CHN"){
-  var link="http://chs.luxsens.com";
-      if(onStep = "style"){link = "http://chs.luxsens.com/m/index.php/view/product/list.html/+category/72"}
-       else if(onStep = "brand" && findGetParameter("brand") == "bbrand"){ 
-          var id = findGetParameter("styleID");   
-          link = "http://chs.luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+id
-       } //show all bags
-       else if(onStep = "brand" && findGetParameter("brand") == "wbrand"){
-          var id = findGetParameter("styleID");   
-          link = "http://chs.luxsens.com/m/index.php/view/product/list.html/+category/73"
-          //http://www.luxsens.com/m/index.php/view/product/list.html/+category/73
-       } //show all bags with respective style
-       else if(onStep = "collection" && findGetParameter("brand") == "bbrand"){
-          var s_id = findGetParameter("styleID");  
-          var b_id = findGetParameter("brandID");  
-          link = "http://chs.luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+ s_id + "/item_brand/" + b_id
-       }
-       else if(onStep = "collection" && findGetParameter("brand") == "wbrand"){ 
-          var b_id = findGetParameter("brandID");  
-          link = "http://chs.luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+ s_id + "/item_brand/" + b_id
-       
-       }
-       else if(onStep = "attr" ){
-          var s_id = findGetParameter("styleID");  
-          var b_id = findGetParameter("brandID");
-          var c_id = findGetParameter("collectionID");  
-          link = "http://chs.luxsens.com/m/index.php/view/product/list.html/+attr/item_collection/"+c_id+"/item_style/"+s_id+"/item_brand/"+b_id+"/+category/45"
-       }  
-      //show all brand
-        $(".skip-button").on("tap",function(){
-          $(".skip-button").off("tap");
-          $("li").remove();
-          insertLoadingGif('ul','images/loading.gif');
-          location.replace(link);
-        })
-  }      
+function insertSkipButton(id){
+  var html = "<div class='skip-button'>SKIP</div>";
+  $(html).prependTo(id); 
 }
+
+function skipThrow(onStep,lang){
+  var prefix = "www"; var link="#";
+  if(lang == "CHN"){ prefix = "chs"}
+      if(onStep == "style"){
+        link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72"
+      } else if(onStep == "brand" && findGetParameter("brand") == "bbrand"){ 
+          var id = findGetParameter("styleID");   
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+id
+      } else if(onStep == "brand" && findGetParameter("brand") == "wbrand"){
+          var id = findGetParameter("styleID");   
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/73"
+      } else if(onStep == "collection" && findGetParameter("brand") == "bbrand"){
+          var s_id = findGetParameter("styleID");  
+          var b_id = findGetParameter("brandID");  
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+ s_id + "/item_brand/" + b_id
+      } else if(onStep == "collection" && findGetParameter("brand") == "wbrand"){ 
+          var b_id = findGetParameter("brandID");  
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/1568/item_brand/" + b_id
+      } else if(onStep == "brand" && findGetParameter("brand") == "abrand"){ 
+          var b_id = findGetParameter("brandID");  
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/8";
+      } else if(onStep == "attr" ){
+          var s_id = findGetParameter("styleID");  
+          var b_id = findGetParameter("brandID");
+          var c_id = findGetParameter("collectionID");  
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_collection/"+c_id+"/item_style/"+s_id+"/item_brand/"+b_id+"/+category/45"
+      }  
+   return link   
+}      

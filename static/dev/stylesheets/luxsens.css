@@ -2771,7 +2771,7 @@ p.howTo {
     width: 100vw !important;
     margin: 0 !important;
     background: transparent;
-    margin-top: 44px !important;
+    /*margin-top: 44px !important;*/
 }
 
 .smart-select-popup .navbar {
