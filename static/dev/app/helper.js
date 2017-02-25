@@ -11,10 +11,11 @@ function hasCollection(_style,_brand){//input string
 function hasCollection2(abrand){//input single string
   var len = abrand.length;
     for(var i=0;i<collectionid.length;i++){
-      if(collectionid[i][2]<len){
+      if(collectionid[i][2].length<len){
         //continue
       } else {//checkname
-        if(abrand.toLowerCase() == collectionid[i][2].substring(0,len)){
+        if(abrand.toLowerCase() == collectionid[i][2].substring(0,len)
+          && abrand.length == collectionid[i][2].length){
           return true
         }
       }
