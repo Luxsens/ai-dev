@@ -9,12 +9,17 @@ function hasCollection(_style,_brand){//input string
 
 //search if brand has collection in menuData
 function hasCollection2(abrand){//input single string
-  for(var i in inventory){//got collectionid from menuData.js
-    var blist = Object.keys(inventory[i]);
-      for(var j =0; j< blist.length;i++){
-        if(abrand == blist[j]) alert("haha")//return true
-      }       
-  } return false
+  var len = abrand.length;
+    for(var i=0;i<collectionid.length;i++){
+      if(collectionid[i][2]<len){
+        //continue
+      } else {//checkname
+        if(abrand.toLowerCase() == collectionid[i][2].substring(0,len)){
+          return true
+        }
+      }
+    }
+    return false
 }//end function  
 
 function getBrandID(_brandName){//input string
@@ -96,6 +101,17 @@ function queryCollection(style,brand){
   }
   return arr; 
 }
+
+function queryCollection2(brand){
+  var arr = []; var index = ""; var len = brand.length
+  for(var i=0;i<collectionid.length;i++){
+    if(brand.toLowerCase() == collectionid[i][2].substring(0,len)) {
+        arr.push(collectionid[i][2]+'/ '+collectionid[i][3]);
+      }
+  }
+  return arr
+}
+
 
 function queryAttr(style,brand,collection){
   var arr = [];

@@ -86,10 +86,12 @@ function stateMenuHandle(_state){
           _case = 4
       } else if( onStep =="brand" && stepValue == "abrand") { //?lang=ENG&category=categories&style=wstyle&styleID=&brand=abrand
           _case = 5
+      } else if( onStep =="collection" && findGetParameter("brand") == "abrand") { //?lang=ENG&category=categories&style=wstyle&styleID=&brand=abrand
+          _case = 6  
       } else if( onStep =="attr") {
           _case = 3
       } else if( onStep =="collection") {
-          _case = 2
+          _case = 2  
       } else if( onStep =="brand") {
           _case = 1
       } else if( stepValue =="categories" ||  stepValue =="bstyle"){
@@ -98,6 +100,12 @@ function stateMenuHandle(_state){
 
   switch(_case){
     case 4: // wait for redirect, do nothing
+
+    case 6://show all possible brand/ will use another logic
+      //special case : //category=categories&style=all&styleID=&brand=abrand
+      var brand = sessionStorage.pickbrand;
+      UI = queryCollection2(brand);
+      break;
 
     case 5://show all possible brand/ will use another logic
       //special case : //category=categories&style=all&styleID=&brand=abrand
@@ -222,44 +230,30 @@ function clickButton(evt, choice, _state) {
   //###############
   
   //category=categories&style=all&styleID=&brand=abrand
-  if(stepValue === "abrand") {
+  if(onStep == "brand" && stepValue == "abrand") {
+    //alert("in herer");
     var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
     sessionStorage.setItem("pickbrand",choice);// remember pick brand
     //if it has a collection go to collection 
 
-    if(hasCollection2(choice)) {
+    if(hasCollection2(choice)) {//-->go to collection/attr
       location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1])) 
     } else { //if it does not have collection
-      if(stepValue == "bbrand"){//bags --> go pick colour
-        sessionStorage.setItem("pickcollection","other");
-        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=colour")) 
-      } else if(stepValue == "wbrand") {//watch --> go to luxsens
-        //sessionStorage.clear();
-        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
-      }
+      location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&collectionID=&attr=other&pickattr=&endflag=go"));
     }
+  }
+
+  if(onStep == "collection" && findGetParameter("brand")=="abrand") {// get all possible collection
+    //alert("in herer");
+    var _collectionID = getCollectionID(choice);
+    sessionStorage.setItem("pickcollection",choice);    
+    location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
   }
 
   //###############
   //regular process
   //###############
   //
-  //// 3) #Hermes/gucci/etc.. now on bag brand brand = bbrand if any of the bag has collection go to that collection 
-  // --> set collection=*respective collection --> go to xxx)
-  // if(onStep === "brand" && stepValue == "abrand") {
-  //   //if it has a collection go to collection 
-  //   //if(hasCollection2(sessionStorage.pickstyle,choice)) {
-  //   //   location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1])) 
-  //   // } else { //if it does not have collection
-  //   //   if(stepValue == "bbrand"){//bags --> go pick colour
-  //   //     sessionStorage.setItem("pickcollection","other");
-  //   //     location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=colour")) 
-  //   //   } else if(stepValue == "wbrand") {//watch --> go to luxsens
-  //   //     //sessionStorage.clear();
-  //   //     location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
-  //   //   }
-  //   // }
-  // }
   ///
   // 5) #red/blue/green now on attribute if it is bag collection send bag attribute and endflag
   // --> set attr=colour and get pickcolour=*respective colour then end flag=end
