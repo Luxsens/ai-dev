@@ -8,20 +8,38 @@ function hasCollection(_style,_brand){//input string
 }//end function  
 
 //search if brand has collection in menuData
-function hasCollection2(abrand){//input single string
+function hasCollection2(abrand){//input single string ex. "Hermes"
   var len = abrand.length;
     for(var i=0;i<collectionid.length;i++){
       if(collectionid[i][2].length<len){
         //continue
       } else {//checkname
         if(abrand.toLowerCase() == collectionid[i][2].substring(0,len)
-          && abrand.length == collectionid[i][2].length){
+          && abrand.length == collectionid[i][2].substring(0,len).length){
           return true
         }
       }
     }
     return false
 }//end function  
+
+function isWristWatch(brand,exception){
+  var arr = Object.keys(inventory["wrist watches"])
+  var len = arr.length;
+
+  if(exception != ""){
+    for(var j=0;j<exception.length;j++){
+      if(arr.indexOf(exception[j]) > -1){//if is in exception remove it from arr
+        arr.splice(arr.indexOf(exception[j]),1)
+      }
+    }
+  }  
+
+  for(var i=0;i<len;i++){
+    if(brand == arr[i]){return true}
+  }
+  return false
+}
 
 function getBrandID(_brandName){//input string
   for(var i=0; i<brandid.length;i++){//got collectionid from menuData.js
@@ -82,7 +100,7 @@ function queryBrand(style){
   for(var i=0;i<brandid.length;i++){
     for(var j=0;j<query.length;j++){
       if(query[j] == brandid[i][2]) {
-        arr.push(query[j]+'/ '+brandid[i][3])
+        arr.push(query[j]+' | '+brandid[i][3])
       }
     }
   }
@@ -96,7 +114,7 @@ function queryCollection(style,brand){
   for(var i=0;i<collectionid.length;i++){
     for(var j=0;j<query.length;j++){
       if(query[j] == collectionid[i][2]) {
-        arr.push(query[j]+'/ '+collectionid[i][3])
+        arr.push(query[j]+' | '+collectionid[i][3])
       }
     }
   }
@@ -107,7 +125,7 @@ function queryCollection2(brand){
   var arr = []; var index = ""; var len = brand.length
   for(var i=0;i<collectionid.length;i++){
     if(brand.toLowerCase() == collectionid[i][2].substring(0,len)) {
-        arr.push(collectionid[i][2]+'/ '+collectionid[i][3]);
+        arr.push(collectionid[i][2]+' | '+collectionid[i][3]);
       }
   }
   return arr
@@ -134,7 +152,7 @@ function queryMenuData(menu){
 function queryAllBrand(){
   var arr = [];//get only brand 'name'
     for(var i=0;i<brandid.length;i++){
-        arr[i] = brandid[i][2]+"/ "+brandid[i][3];
+        arr[i] = brandid[i][2]+" | "+brandid[i][3];
     }
   return arr   
 }

@@ -31,12 +31,23 @@ function getState(){
 
   if(endf == "go")                     {state["onStep"] = "end"; 
                                         state["stepValue"]="end";
+
+  //process 1
+  } else if(style !== "none" && brand === "abrand")           
+                                        {state["onStep"] = "collection"; 
+                                        state["stepValue"] = collection;
+  } else if(collection !== "none" && brand === "abrand")      
+                                        {state["onStep"] = "category"; 
+                                        state["stepValue"] = category;
+
+
+  //process 2
   } else if(attr !== "none")            {state["onStep"] = "attr";
                                         state["stepValue"] = attr;
   } else if(collection !== "none")      {state["onStep"] = "collection"; 
-                                        state["stepValue"] = collection;
+                                        state["stepValue"] = collection;                              
   } else if(brand !== "none")           {state["onStep"] = "brand"; 
-                                        state["stepValue"] = brand;
+                                        state["stepValue"] = brand;                                       
   } else if(style !== "none")           {state["onStep"] = "style"; 
                                         state["stepValue"] = style;
   } else if(category == "categories")  {state["onStep"] = "category"; 
@@ -143,11 +154,15 @@ function stateMenuHandle(_state){
   }
    //may omit depends on UI
    var UI = prep(UI);
+
+   if(stepValue =="bstyle") UI.push("O","Others | 其他")
+
+    //logger("ui",UI)
   
     UI.map(function(choice) {
 
     //##################### UI building start here ######################
-      if(choice.length == 1){
+      if(choice.length === 1){
         var html = "<li class='item-divider'>" + choice + "</li>";
         var elem = $(html).appendTo('ul')
       } else {
@@ -184,7 +199,8 @@ function showButtons() {
   var link="#";
 
   if(_state["onStep"] == "style"||_state["onStep"] == "brand" 
-    || _state["onStep"] == "collection" || _state["onStep"] == "attr") {
+    || _state["onStep"] == "collection" || _state["onStep"] == "attr" 
+    || _state["onStep"] == "category" && findGetParameter("brand")=="abrand") {
     //Add skip button
     
     insertSkipButton("#sweetbox");//<!-- <div class="skip-button"></div> -->
@@ -213,7 +229,7 @@ function clickButton(evt, choice, _state) {
   logger("state",onStep + "/ " + stepValue);
 
   //get EN word from choice
-  var choice = choice.split('/')[0].toLowerCase(); 
+  var choice = choice.split(' |')[0].toLowerCase(); 
 
   //check status
   logger("selected choice :", choice);
@@ -228,27 +244,52 @@ function clickButton(evt, choice, _state) {
   //###############
   //all brand process
   //###############
+  //
+  if(onStep == "collection" && findGetParameter("brand") == "abrand"  ) {  
+    var _collectionID = getCollectionID(choice);
+    sessionStorage.setItem("pickcollection",choice);
+    location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
+  }
   
-  //category=categories&style=all&styleID=&brand=abrand
+
+  if(onStep == "category" && findGetParameter("brand") == "abrand") {
+        if(choice == "bag"){
+          location.assign(now.concat("&style=awatch&styleID="));
+        } else { //watch
+          location.assign(now.concat("&style=awatch&styleID=1568&endflag=go"));
+        }      
+  }
+
+
   if(onStep == "brand" && stepValue == "abrand") {
     //alert("in herer");
     var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
     sessionStorage.setItem("pickbrand",choice);// remember pick brand
-    //if it has a collection go to collection 
+    var none = ""
+    //except bag or bag&watch
+    var exception = ["balenciaga","bottega veneta","bulgari","celine","chanel","christian dior","coach","fendi",
+"gucci","hermes","louis vuitton","michael kors","prada","valentino"];
+      if(isWristWatch(choice,exception)){ //pure watch
+          if(hasCollection2(choice)) {
+            location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&category=categories&style=awatch&styleID=1568"));
+          } else {//is watch and don't have collection
+            location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&category=categories&style=awatch&styleID=1568&endflag=go"));
+          }
+      } else if(!isWristWatch(choice,"")){// pure bag
+          if(hasCollection2(choice)) {
+            location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&category=categories&style=awatch&styleID="));
+          } else { 
+          location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&category=categories&style=abag&styleID=&endflag=go"));      
+          }
+      } else {// bag + wrist watch
+          location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&category=categories"));
+      }     
+       
 
-    if(hasCollection2(choice)) {//-->go to collection/attr
-      location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1])) 
-    } else { //if it does not have collection
-      location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1] + "&collectionID=&attr=other&pickattr=&endflag=go"));
-    }
-  }
+  
+}  
 
-  if(onStep == "collection" && findGetParameter("brand")=="abrand") {// get all possible collection
-    //alert("in herer");
-    var _collectionID = getCollectionID(choice);
-    sessionStorage.setItem("pickcollection",choice);    
-    location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
-  }
+
 
   //###############
   //regular process
@@ -258,27 +299,27 @@ function clickButton(evt, choice, _state) {
   // 5) #red/blue/green now on attribute if it is bag collection send bag attribute and endflag
   // --> set attr=colour and get pickcolour=*respective colour then end flag=end
   // go to luxsens page
-  if(onStep == "attr") {
-    location.assign(now.concat("&pickattr=" + choice +"&endflag=go"))
-  } 
+  // if(onStep == "attr") {
+  //   location.assign(now.concat("&pickattr=" + choice +"&endflag=go"))
+  // } 
   
   //4 #city/red sun/loli/.... now we are on collection --> go to attr //&& findGetParameter("brand") == "bbrand"
-  if(onStep == "collection") {  
+  if(onStep == "collection" && findGetParameter("brand") !== "abrand"  ) {  
     var _collectionID = getCollectionID(choice);
     sessionStorage.setItem("pickcollection",choice);
-      if(findGetParameter("brand") == "bbrand"){// on bag collection
+      // if(findGetParameter("brand") == "bbrand"){// on bag collection
         
-        location.assign(now.concat("&collectionID=" + _collectionID + "&attr=colour"));
-      }else if(findGetParameter("brand") == "wbrand") {//watch
-
         location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
+      // }else if(findGetParameter("brand") == "wbrand") {//watch
 
-    }
+        // location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
+
+    // }
   }
   
   // 3) #Hermes/gucci/etc.. now on bag brand brand = bbrand if any of the bag has collection go to that collection 
   // --> set collection=*respective collection --> go to xxx)
-  if(onStep === "brand") {
+  if(onStep === "brand" && findGetParameter("brand") !== "abrand") {
     var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
     sessionStorage.setItem("pickbrand",choice);// remember pick brand
     //if it has a collection go to collection 
@@ -289,7 +330,7 @@ function clickButton(evt, choice, _state) {
     } else { //if it does not have collection
       if(stepValue == "bbrand"){//bags --> go pick colour
         sessionStorage.setItem("pickcollection","other");
-        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=colour")) 
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=colour&pickattr=&endflag=go")) 
       } else if(stepValue == "wbrand") {//watch --> go to luxsens
         //sessionStorage.clear();
         location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
@@ -299,17 +340,16 @@ function clickButton(evt, choice, _state) {
 
   //2) #backpack/cluthes/etc. now on style=bstyle customer select any prefered bag style --> store data on bagstyles = "value" then go to bag brand
   // --> set brand=bbrand -->go to 3)
-  if(onStep === "style") {
+  if(onStep === "style" && findGetParameter("brand") !== "abrand") {
     var _styleID = getStyleID(choice);// ex. [123456,"Cluth"]
     sessionStorage.setItem("pickstyle",choice);// remember pick style
     location.assign(now.concat("&styleID="+_styleID+"&brand=bbrand"))
   }
 
   //1) #bag/watch start at "Categories" menu, show all categories Luxsens has
-  if(onStep == "category" && choice == "bag") {
-    //1.1) if click bag goto bag style --> set styles=bstyle --> go to 2)
+  if(stepValue == "categories" && choice == "bag" && findGetParameter("brand") !== "abrand"){
     location.assign(now.concat("&style=bstyle"))
-  } else if(onStep == "category" && choice == "watch") {
+  } else if(stepValue == "categories" && choice == "watch" && findGetParameter("brand") !== "abrand"){//&& findGetParameter("brand") !== "abrand") {
     //1.2) if click watch goto watch style --> since watch has no style set styles=wstyle then go to brand
     sessionStorage.setItem("pickstyle","wrist watches"); 
     location.assign(now.concat("&style=wstyle&styleID=1568&brand=wbrand"))
@@ -361,6 +401,10 @@ function skipThrow(onStep,lang){
       } else if(onStep == "brand" && findGetParameter("brand") == "wbrand"){
           var id = findGetParameter("styleID");   
           link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/73"
+      } else if(onStep == "collection" && findGetParameter("brand") == "abrand"){
+          var s_id = findGetParameter("styleID");  
+          var b_id = findGetParameter("brandID");  
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/"+ s_id + "/item_brand/" + b_id
       } else if(onStep == "collection" && findGetParameter("brand") == "bbrand"){
           var s_id = findGetParameter("styleID");  
           var b_id = findGetParameter("brandID");  
@@ -369,8 +413,10 @@ function skipThrow(onStep,lang){
           var b_id = findGetParameter("brandID");  
           link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72/+attr/item_style/1568/item_brand/" + b_id
       } else if(onStep == "brand" && findGetParameter("brand") == "abrand"){ 
-          var b_id = findGetParameter("brandID");  
           link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/8";
+      } else if(onStep == "category" && findGetParameter("brand") == "abrand"){ 
+          var b_id = findGetParameter("brandID");  
+          link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_brand/" + b_id + "/+category/8"   
       } else if(onStep == "attr" ){
           var s_id = findGetParameter("styleID");  
           var b_id = findGetParameter("brandID");

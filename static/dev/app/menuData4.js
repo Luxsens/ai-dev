@@ -1,20 +1,20 @@
 menuData = 
 {
   categories: [
-    ["Bag/ 手袋"],
-    ["Watch/ 钟表"]
+    ["Bag | 手袋"],
+    ["Watch | 钟表"]
     //"Others"
   ],
   bstyle: [
-    ["Shoulder Bags/ 肩背包"], 
-    ["Wallets and Small Accessories/ 钱包及配件"], 
-    ["Clutches/ 手包"], 
-    ["Totes/ 手提包"], 
-    ["Backpacks/ 背包"], 
-    ["Briefcases/ 公文包"], 
-    ["Others/ 其他"], 
+    ["Shoulder Bags | 肩背包"], 
+    ["Wallets and Small Accessories | 钱包及配件"], 
+    ["Clutches | 手包"], 
+    ["Totes | 手提包"], 
+    ["Backpacks | 背包"], 
+    ["Briefcases | 公文包"], 
+    //["Others 其他"], 
     //["Wrist Watches/ 腕表"], 
-    ["Luggage and Travelling bags/ 旅行包及行李箱"], 
+    ["Luggage and Travelling bags | 旅行包及行李箱"], 
     //["Wallets and small items/ 钱包及饰物"]
   ],
   bbrand: [
