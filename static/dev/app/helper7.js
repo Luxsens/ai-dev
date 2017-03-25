@@ -23,6 +23,19 @@ function hasCollection2(abrand){//input single string ex. "Hermes"
     return false
 }//end function  
 
+//search if that brand has Style
+function hasStyle(bbrand){//input single string ex. "Hermes"
+  var len = bbrand.length;
+    for(var i in inventory){
+      if(i == "wrist watches" || i == "others"){continue
+      } else {//checkname
+        var arr = Object.keys(inventory[i]);
+          if(arr.indexOf(bbrand) != -1 ) return true
+      }
+    }
+    return false
+}//end function  
+
 function isWristWatch(brand,exception){
   var arr = Object.keys(inventory["wrist watches"])
   var len = arr.length;
@@ -68,17 +81,36 @@ function getCollectionID(_collectionName){//input string
       if(collectionid[i][2].toLowerCase() == _collectionName){
         return collectionid[i][0];
       } 
-  }    
-  return ["",""];
+  }
+  //incase can not find collection id    
+  return "";
 }//end function
 
 //get all name of that collection name
 function queryCollectionID(_brandName){//input string
-  var arr = [];//get only brand 'name'
+  var arr = []; 
   for(var i=0; i<collectionid[_brandName].length;i++){//got collectionid from menuData.js
         arr[i] = collectionid[_brandName][i][1];
-  } 
-  return arr; 
+  }
+  return array; 
+}
+
+function queryStyles(abrand){//input string ex Hermes
+  var array = []; var array2 = [];
+
+  for(var i in inventory){
+    var arr = Object.keys(inventory[i]);
+    if(arr.indexOf(abrand) != -1 ) array.push(i)
+  }
+  
+  for(var i=0; i<array.length;i++){
+    for(var j=0; j<menuData['bstyle'].length;j++){
+      if(array[i].substring(0,3) == menuData['bstyle'][j][0].toLowerCase().substring(0,3)) {
+        array2.push(menuData['bstyle'][j][0]);
+      }
+    }
+  }  
+  return array2; 
 }
 
 function querystylesID(lang){//input string
@@ -110,6 +142,7 @@ function queryBrand(style){
 function queryCollection(style,brand){
   var arr = [];
   var query = Object.keys(inventory[style][brand]);
+  if(query.length <= 1) {arr = query; return arr;}
   //get var brandid drom menuData.js
   for(var i=0;i<collectionid.length;i++){
     for(var j=0;j<query.length;j++){
@@ -179,20 +212,43 @@ function logger(txt, obj) {
 
 
 function prep(arr){//input : array of string
-  //This prep will add index
-  //[bag,watch] -> [b,bag,w,watch]
-  var array = arr.sort();
-  var index =""; var result = [];
+  //This prep will add index --> [bag,watch] -> [b,bag | 手袋,w,watch | 钟表]
+  var oflag = false;
+  if(arr.indexOf("Others | 其他") != -1){
+    var idxo = arr.indexOf("Others | 其他");
+    arr.splice(idxo,1);
+    oflag = true;
+  }
+  var array = arr.sort();var index =""; var result = [];
     for(var i=0;i<array.length;i++){
+      //create index
       if(index !== array[i].substring(0,1)){
         index = array[i].substring(0,1);
         result.push(index);
       }
       result.push(array[i]);
-      }
+    }  
+  if(oflag) result.push("O","Others | 其他")  
   return result;    
 }
 
+function whereAreWe(category,style,brand,collection,attr,endf,flow) {
+  var state = {};
+  if(endf == "go") {state["onStep"] = "end"; state["stepValue"]="end"; return state}
+
+  if(flow == "BSCAL") {                           
+             if(attr !== "none")            {state["onStep"] = "attr";
+                                            state["stepValue"] = attr;
+      } else if(collection !== "none")      {state["onStep"] = "collection"; 
+                                            state["stepValue"] = collection;                                                                   
+      } else if(style !== "none")           {state["onStep"] = "style"; 
+                                            state["stepValue"] = style;
+      } else if(brand !== "none")           {state["onStep"] = "brand"; 
+                                            state["stepValue"] = brand;
+             }                                 
+  }    
+ return state;   
+}
 
     
 
