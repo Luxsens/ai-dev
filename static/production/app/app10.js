@@ -23,7 +23,7 @@ function getState(){
   //always false except get "true" from click
   var endf = findGetParameter("endflag");         if(endf.length === undefined) {endf = "false"}            logger("found endflag", endf)
   var lang = findGetParameter("lang");            if(lang.length === undefined) {lang = "ENG"}              logger("found lang", lang)
-  var flow = findGetParameter("flow");            if(flow.length === undefined) {flow = "BSCAL"}            logger("found flow", flow)
+  var flow = findGetParameter("flow");            if(flow.length === undefined) {flow = "none"}            logger("found flow", flow)
 
   var state = whereAreWe(category,style,brand,collection,attr,endf,flow);
 
@@ -144,8 +144,6 @@ function clickButton(evt, choice, _state) {
                                 //  navigation step using if condition  //
 //######################################################################################################
 
-
-
 //###########################################################################################
 //# regular process -- BSCAL  Brands --> Styles --> Collection --> attr --> Luxsens Search #
 //###########################################################################################
@@ -190,13 +188,106 @@ function clickButton(evt, choice, _state) {
         location.assign(now.concat("&brandID=" + _brandID[0] +"&style=bstyle"));
 
         } else if(hasCollection2(choice)) { //2 if it does not have style --> goto collection 
-        location.assign(now.concat("&brandID=" + _brandID[0] +"&style=none&styleID="+"&collection=" + _brandID[1]));
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&style=watch&styleID=1568"+"&collection=" + _brandID[1]));
         
         } else { //if don't have style&collection --> skip attr -->go to luxsens
         location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&style=all&styleID=&attr=other&pickattr=&endflag=go")) 
         }
       }
       
+    }
+  }  
+
+//###########################################################################################
+//# All brands flow -- BSCAL  Brands --> Collection --> attr --> Luxsens Search #
+//###########################################################################################
+  if(flow == "allbrand"){
+
+  //3) onStep collection
+    if(onStep == "collection") {  
+      var _collectionID = getCollectionID(choice);//return 12345
+      sessionStorage.setItem("pickcollection",choice);
+      //skip attr just go to search page    
+      location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
+    }
+
+  //2) onStep style
+    if(onStep === "style") {
+      var _styleID = getStyleID(choice);// ex. [123456,"Cluth"]
+      var brand = sessionStorage.pickbrand;
+      var style = sessionStorage.pickstyle;
+      sessionStorage.setItem("pickstyle",choice);// remember pick style
+      location.assign(now.concat("&styleID="+_styleID +"&collection=" + brand));
+    }
+    
+
+  // 1) start : show all brands
+    if(onStep === "brand"  && stepValue == "allbrand") {
+      var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
+      sessionStorage.setItem("pickbrand",choice);// remember pick brand --> "hermes"
+      
+      if(hasStyle(choice)) { //1 has a style go to that style
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&style=astyle"));
+
+        } else if(hasCollection2(choice)) { //2 if it does not have style --> goto collection 
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&style=none&styleID=1568"+"&collection=" + _brandID[1]));
+        
+        } else { //if don't have style&collection --> skip attr -->go to luxsens
+        location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&style=all&styleID=&attr=other&pickattr=&endflag=go")) 
+        }
+      }
+    }
+
+      //###########################################################################################################
+      //# Category process -- CSBCAL Categories --> Styles --> Brands --> Collection --> attr --> Luxsens Search #
+      //###########################################################################################################
+  if(flow == "CSBCAL"){
+
+  //3) onStep collection
+    if(onStep == "collection") {  
+      var _collectionID = getCollectionID(choice);//return 12345
+      sessionStorage.setItem("pickcollection",choice);
+      //skip attr just go to search page    
+      location.assign(now.concat("&collectionID=" + _collectionID + "&attr=other" + "&pickattr="+"&endflag=go"));
+    }    
+
+  // 1) start : show all brands
+    if(onStep === "brand") {
+      var _brandID = getBrandID(choice);// ex. [123456,"hermes"]
+      sessionStorage.setItem("pickbrand",choice);// remember pick brand --> "hermes"
+      var brand = sessionStorage.pickbrand;
+      var style = sessionStorage.pickstyle;
+      
+      if(stepValue == "bbrand") { //1 has a collection go to that collection
+        if(hasCollection(style,brand)){
+          location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=" + _brandID[1]));
+        } else { //if don't have collection --> skip attr -->go to luxsens
+          location.assign(now.concat("&brandID=" + _brandID[0] +"&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
+        }
+      } else if(stepValue == "wbrand") { //1 has a collection go to that collection
+        if(hasCollection2(brand)){
+          location.assign(now.concat("&brandID=" + _brandID[0] +"&style=none&styleID=1568&collection=" + _brandID[1]));
+        } else { //if don't have collection --> skip attr -->go to luxsens
+          location.assign(now.concat("&brandID=" + _brandID[0] +"&style=none&styleID=1568&collection=other&collectionID=&attr=other&pickattr=&endflag=go")) 
+        }
+      }
+    }
+
+    //2) onStep style
+    if(onStep === "style") {
+      var _styleID = getStyleID(choice);// ex. [123456,"Cluth"]
+      sessionStorage.setItem("pickstyle",choice);// remember pick style
+        location.assign(now.concat("&styleID="+_styleID +"&brand=bbrand"));
+    }
+
+    // 1) start : show 2 categories
+    if(onStep == "category") {
+      if(choice == "bag"){
+        location.assign(now.concat("&style=bstyle"));
+      } else if(choice == "watch") { //2 if it does not have style --> goto collection 
+        sessionStorage.setItem("pickstyle","wrist watches")
+        location.assign(now.concat("&style=none&styleID=1568&brand=wbrand"));
+      }  
     }
   }  
 }  
@@ -248,15 +339,51 @@ function skipThrow(onStep,stepValue,lang,flow){
 
     } else if(onStep == "style"){//get all items in that Brands except watch
       var b_id = findGetParameter("brandID");  
-      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/item_brand/"+b_id+"/+category/72"
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_brand/"+b_id+"/+category/72"
 
     } else if(onStep == "collection"){//bags get all collection on styles&brands -- watch get all collection
       var b_type = findGetParameter("brand"); 
       var b_id = findGetParameter("brandID");
       if(findGetParameter("styles") != "none") var s_id = findGetParameter("styleID");
-      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/item_brand/"+b_id+"item_style/"+s_id+"/+category/45"  
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_style/"+s_id+"/item_brand/"+b_id+"/+category/45"  
     }
   }  
+
+  if(flow == "allbrand"){
+      if(onStep == "brand"){
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/45"
+
+    } else if(onStep == "style"){//get all items in that Brands except watch
+      var b_id = findGetParameter("brandID");  
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_brand/"+b_id+"/+category/72"
+
+    } else if(onStep == "collection"){//bags get all collection on styles&brands -- watch get all collection
+      var b_type = findGetParameter("brand"); 
+      var b_id = findGetParameter("brandID");
+      if(findGetParameter("styles") != "none") var s_id = findGetParameter("styleID");
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_style/"+s_id+"/item_brand/"+b_id+"/+category/45"  
+    }
+  }  
+
+  if(flow == "CSBCAL"){
+     if(onStep == "category"){
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/45"
+
+    } else if(onStep == "style"){//get all items in that Brands except watch
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+category/72"  
+
+    } else if(onStep == "brand"){
+      var s_id = findGetParameter("styleID");
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr"+"/item_style/"+s_id+"+category/45"
+
+    } else if(onStep == "collection"){//bags get all collection on styles&brands -- watch get all collection
+      var b_type = findGetParameter("brand"); 
+      var b_id = findGetParameter("brandID");
+      if(findGetParameter("styles") != "none") var s_id = findGetParameter("styleID");
+      link = "http://" + prefix + ".luxsens.com/m/index.php/view/product/list.html/+attr/item_style/"+s_id+"/item_brand/"+b_id+"/+category/45"  
+    }
+  }  
+
    return link   
 }      
 
@@ -272,31 +399,87 @@ function processUI(onStep,stepValue,flow){
       //# regular process -- BSCAL  Brands --> Styles --> Collection --> attr --> Luxsens Search #
       //###########################################################################################
 
-    if(flow == "BSCAL"){
-        if( onStep =="attr") {
+  if(flow == "BSCAL"){
+      if( onStep =="attr") {
+        _case = 040; //show attr
+
+    } else if( onStep =="collection") {
+        _case = 030; //got brand and style, g for collection
+
+    } else if( onStep =="style") {
+        _case = 020; //go to search style of that brands 
+
+    } else if( onStep =="brand" && stepValue == "wbrand") {
+        _case = 011; //go to possible watches brand include Chanel/Lv/etc.           
+
+    } else if( onStep =="brand" && stepValue == "bbrand") {
+        _case = 010; //go to handle bags brand 
+
+    } else{
+        _case = 27; //unreachable
+    }
+  }    
+
+      //###########################################################################################
+      //# all brand process -- Brands --> Styles --> Collection --> attr --> Luxsens Search #
+      //###########################################################################################   
+    if(flow == "allbrand"){
+      if(onStep =="attr") {
           _case = 040; //show attr
 
+      //} else if( onStep =="collection" && findGetParameter("styleID") == 1568) {
+      //    _case = 031; //got brand and style, go for collection
+
       } else if( onStep =="collection") {
-          _case = 030; //got brand and style, g for collection
+          _case = 030; //got brand and style, go for collection
 
       } else if( onStep =="style") {
-          _case = 020; //go to search style of that brands 
+          _case = 021; //go to search style of that brands 
 
-      } else if( onStep =="brand" && stepValue == "wbrand") {
-          _case = 011; //go to possible watches brand include Chanel/Lv/etc.           
-
-      } else if( onStep =="brand" && stepValue == "bbrand") {
-          _case = 010; //go to handle bags brand 
-
+      } else if( onStep =="brand") {
+          _case = 012; //go to possible watches brand include Chanel/Lv/etc.           
       } else{
           _case = 27; //unreachable
       }
-    }       
+    }
 
+      //###########################################################################################################
+      //# Category process -- CSBCAL Categories --> Styles --> Brands --> Collection --> attr --> Luxsens Search #
+      //###########################################################################################################
+
+  if(flow == "CSBCAL"){
+      if( onStep =="attr") {
+        _case = 040; //show attr
+
+    } else if( onStep =="collection") {
+        _case = 030; //got brand and style, g for collection
+
+    } else if( onStep =="brand" && stepValue == "wbrand") {
+        _case = 011; //go to possible watches brand include Chanel/Lv/etc.           
+
+    } else if( onStep =="brand" && stepValue == "bbrand") {
+        _case = 010; //go to handle bags brand 
+
+    } else if( onStep =="style") {
+        _case = 022; //go to search style of that brands 
+
+    } else if( onStep =="category") {
+        _case = 000; //show categories   
+
+    } else {
+        _case = 27; //unreachable
+    }
+  }      
 
   switch(_case){
     case 4:
       UI = {};
+
+    case 031:
+      //Note:case sensitive. in database first letter is capitalize ex. "Backpack"
+      var brand = sessionStorage.pickbrand;
+      UI = queryCollection2(brand); 
+      break;  
 
     case 030:
       //Note:case sensitive. in database first letter is capitalize ex. "Backpack"
@@ -305,10 +488,25 @@ function processUI(onStep,stepValue,flow){
       UI = queryCollection(style,brand);
       break;
 
+    case 022: //simply show array in menuData.js; key =stepValue
+      UI = queryMenuData('bstyle');
+      break;  
+
+    case 021: //obtain brand; query all possible style according to that brand.
+      //Note:case sensitive. in database first letter is capitalize ex. "Backpack"
+      var brand = sessionStorage.pickbrand;
+      UI = queryStyles2(brand);
+      break;  
+
     case 020: //obtain brand; query all possible style according to that brand.
       //Note:case sensitive. in database first letter is capitalize ex. "Backpack"
       var brand = sessionStorage.pickbrand;
       UI = queryStyles(brand);
+      break;
+
+    case 012: //show all brands that has wrist watches
+      //Note:case sensitive. in database first letter is capitalize ex. "Backpack"
+      UI = queryAllBrand();  
       break;
 
     case 011: //show all brands that has wrist watches
@@ -319,6 +517,10 @@ function processUI(onStep,stepValue,flow){
     case 010: //simply show array in menuData.js; key =stepValue
       UI = queryMenuData('bbrand');
       break;
+
+    case 000: //simply show array in menuData.js; key =stepValue
+      UI = queryMenuData('categories');
+      break;  
 
     case 27: //lost
         alert("Error#27: how did you get here, buddy?, please start over.")

@@ -113,6 +113,25 @@ function queryStyles(abrand){//input string ex Hermes
   return array2; 
 }
 
+function queryStyles2(abrand){//input string ex Hermes
+  var array = []; var array2 = [];
+
+  for(var i in inventory){
+    var arr = Object.keys(inventory[i]);
+    if(arr.indexOf(abrand) != -1 ) array.push(i)
+  }
+  //logger("array",array)
+  for(var i=0; i<array.length;i++){
+    for(var j=0; j<menuData['astyle'].length;j++){
+      if(array[i].substring(0,3) == menuData['astyle'][j][0].toLowerCase().substring(0,3)) {
+        array2.push(menuData['astyle'][j][0]);
+      }
+    }
+  }
+  //logger("array2",array2)  
+  return array2; 
+}
+
 function querystylesID(lang){//input string
   var arr = [];//get only brand 'name'
   for(var i=0; i<stylesid.length;i++){//got collectionid from menuData.js
@@ -142,12 +161,13 @@ function queryBrand(style){
 function queryCollection(style,brand){
   var arr = [];
   var query = Object.keys(inventory[style][brand]);
+  //logger('query',query);
   if(query.length <= 1) {arr = query; return arr;}
   //get var brandid drom menuData.js
   for(var i=0;i<collectionid.length;i++){
     for(var j=0;j<query.length;j++){
       if(query[j] == collectionid[i][2]) {
-        arr.push(query[j]+' | '+collectionid[i][3])
+        arr.push(collectionid[i][2]+' | '+collectionid[i][3])
       }
     }
   }
@@ -213,13 +233,15 @@ function logger(txt, obj) {
 
 function prep(arr){//input : array of string
   //This prep will add index --> [bag,watch] -> [b,bag | 手袋,w,watch | 钟表]
+  var arry = arr;
   var oflag = false;
-  if(arr.indexOf("Others | 其他") != -1){
-    var idxo = arr.indexOf("Others | 其他");
-    arr.splice(idxo,1);
+  //logger("arr",arr);
+  if(arry.indexOf("Others | 其他") != -1){
+    var idxo = arry.indexOf("Others | 其他");
+    arry.splice(idxo,1);
     oflag = true;
   }
-  var array = arr.sort();var index =""; var result = [];
+  var array = arry.sort();var index =""; var result = [];
     for(var i=0;i<array.length;i++){
       //create index
       if(index !== array[i].substring(0,1)){
@@ -229,12 +251,15 @@ function prep(arr){//input : array of string
       result.push(array[i]);
     }  
   if(oflag) result.push("O","Others | 其他")  
+  //logger('result',result);  
   return result;    
 }
 
 function whereAreWe(category,style,brand,collection,attr,endf,flow) {
   var state = {};
   if(endf == "go") {state["onStep"] = "end"; state["stepValue"]="end"; return state}
+
+  if(flow == "none") {alert("Error : Can not detect flow, please start over")}
 
   if(flow == "BSCAL") {                           
              if(attr !== "none")            {state["onStep"] = "attr";
@@ -246,7 +271,33 @@ function whereAreWe(category,style,brand,collection,attr,endf,flow) {
       } else if(brand !== "none")           {state["onStep"] = "brand"; 
                                             state["stepValue"] = brand;
              }                                 
-  }    
+  }
+
+  if(flow == "allbrand") {                           
+             if(attr !== "none")            {state["onStep"] = "attr";
+                                            state["stepValue"] = attr;
+      } else if(collection !== "none")      {state["onStep"] = "collection"; 
+                                            state["stepValue"] = collection;                                                                   
+      } else if(style !== "none")           {state["onStep"] = "style"; 
+                                            state["stepValue"] = style;
+      } else if(brand !== "none")           {state["onStep"] = "brand"; 
+                                            state["stepValue"] = brand;
+             }                                 
+  }
+
+  if(flow == "CSBCAL") {                           
+             if(attr !== "none")            {state["onStep"] = "attr";
+                                            state["stepValue"] = attr;
+      } else if(collection !== "none")      {state["onStep"] = "collection"; 
+                                            state["stepValue"] = collection;                                                                   
+      } else if(brand !== "none")           {state["onStep"] = "brand"; 
+                                            state["stepValue"] = brand;
+      } else if(style !== "none")           {state["onStep"] = "style"; 
+                                            state["stepValue"] = style;                                      
+      } else if(category !== "none")        {state["onStep"] = "category"; 
+                                            state["stepValue"] = category;  
+              }                                                            
+  }     
  return state;   
 }
 

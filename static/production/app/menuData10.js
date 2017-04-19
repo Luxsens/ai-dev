@@ -17,6 +17,18 @@ menuData =
     ["Luggage and Travelling bags | 旅行包及行李箱"], 
     //["Wallets and small items/ 钱包及饰物"]
   ],
+  astyle: [
+    ["Shoulder Bags | 肩背包"], 
+    ["Wallets and Small Accessories | 钱包及配件"], 
+    ["Clutches | 手包"], 
+    ["Totes | 手提包"], 
+    ["Backpacks | 背包"], 
+    ["Briefcases | 公文包"], 
+    ["Others | 其他"], 
+    ["Wrist Watches | 腕表"], 
+    ["Luggage and Travelling bags | 旅行包及行李箱"], 
+    //["Wallets and small items/ 钱包及饰物"]
+  ],
   bbrand: [
     ["Balenciaga", "巴黎世家"],
     ["Bottega veneta","宝缇嘉"],
@@ -686,7 +698,7 @@ var collectionid = [["16780","0","balenciaga city"," 巴黎世家 City"],["16785
 //     ],
 // };
 
-var stylesid = [["1554","0","Shoulder Bags","肩背包 "],["1556","0","Wallets and Small Accessories","钱包及配件 "],["1557","0","Clutches","手包 "],["1558","0","Totes","手提包 "],["1559","0","Backpacks","背包 "],["1561","0","Briefcases","公文包 "],["1567","0","Others","其他 "],["1568","0","Wrist Watches","腕表 "],["1873","0","Luggage and Travelling bags","旅行包及行李箱 "],["5603","0","Wallets and small items","钱包及饰物"]]
+  var stylesid = [["1554","0","Shoulder Bags","肩背包 "],["1556","0","Wallets and Small Accessories","钱包及配件 "],["1557","0","Clutches","手包 "],["1558","0","Totes","手提包 "],["1559","0","Backpacks","背包 "],["1561","0","Briefcases","公文包 "],["1567","0","Others","其他 "],["1568","0","Wrist Watches","腕表 "],["1873","0","Luggage and Travelling bags","旅行包及行李箱 "],["5603","0","Wallets and small items","钱包及饰物"]]
 // [
 // [1554,0,"Shoulder Bags","肩背包"], 
 // [1556,0,"Wallets and Small Accessories","钱包及配件"], 
