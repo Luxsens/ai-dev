@@ -1,6 +1,11 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-  setup();
-});
+// document.addEventListener("DOMContentLoaded", function(event) {
+//   setup();
+// });
+// 
+Zepto(function($){
+  logger('doc ready');
+    setup();
+}); 
 
 function setup() {
   logger("setup","Start");
@@ -13,7 +18,8 @@ function getThenPostMessage() {
     text: key
   }
   sendMessage(msg)
-  closeWindow();
+  logger("ready to close");
+  setTimeout(closeWindow, 2000 );
 }
 
 //---------------------------------------------------------------------------------
@@ -68,9 +74,9 @@ var config = {
 //   return result;
 // }
 
-// function closeWindow() {
-//   logger("closing")
-//   wx.closeWindow();
-// }
+function closeWindow() {
+  logger("closing")
+  wx.closeWindow();
+}
 
 
